@@ -1,4 +1,4 @@
-﻿namespace WhatsappNet.API.Util
+﻿namespace WhatsappNet.API.Utils
 {
     public class Util : IUtil
     {

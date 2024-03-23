@@ -1,5 +1,5 @@
 using WhatsappNet.API.Services.WhatsappCloud.SendMessage;
-using WhatsappNet.API.Util;
+using WhatsappNet.API.Utils;
 
 namespace WhatsappNet.API
 {
@@ -13,7 +13,7 @@ namespace WhatsappNet.API
 
             builder.Services.AddControllers();
             builder.Services.AddSingleton<IWhatsappCloudSendMessage, WhatsappCloudSendMessage>();
-            //builder.Services.AddSingleton<IUtil, Util>();
+            builder.Services.AddSingleton<IUtil, Util>();
 
             var app = builder.Build();
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WhatsappNet.API.Models.WhatsappCloud;
 using WhatsappNet.API.Services.WhatsappCloud.SendMessage;
+using WhatsappNet.API.Utils;
 
 namespace WhatsappNet.API.Controllers
 {
@@ -9,9 +10,11 @@ namespace WhatsappNet.API.Controllers
     public class WhatsAppController : Controller
     {
         private readonly IWhatsappCloudSendMessage _whatsappCloudSendMessage;
-        public WhatsAppController(IWhatsappCloudSendMessage whatsappCloudSendMessage)
+        private readonly IUtil _util;
+        public WhatsAppController(IWhatsappCloudSendMessage whatsappCloudSendMessage, IUtil util)
         {
             _whatsappCloudSendMessage = whatsappCloudSendMessage;
+            _util = util;
         }
         [HttpGet("test")]
         public async Task<IActionResult> Sample()
@@ -64,6 +67,50 @@ namespace WhatsappNet.API.Controllers
                 {
                     var userNumber = message.From;
                     var userText = GetUserText(message);
+
+                    object objectMessage;
+
+                    switch (userText.ToString().ToUpper())
+                    {
+                        case "TEXT":
+                            objectMessage = _util.TextMessage("Este es un ejemplo de texto", userNumber);
+                            break;
+
+                        case "COMPRAR":
+                            objectMessage = _util.TextMessage("Seleccionaste comprar", userNumber);
+                            break;
+
+                        case "IMAGE":
+                            objectMessage = _util.ImageMessage("https://images.pexels.com/photos/20568187/pexels-photo-20568187/free-photo-of-resfriado-frio-nieve-nevar.jpeg", userNumber);
+                            break;
+
+                        case "AUDIO":
+                            objectMessage = _util.AudioMessage("https://actions.google.com/sounds/v1/animals/mouse_squeaking.ogg", userNumber);
+                            break;
+
+                        case "VIDEO":
+                            objectMessage = _util.VideoMessage("https://biostoragecloud.blob.core.windows.net/resource-udemy-whatsapp-node/video_whatsapp.mp4", userNumber);
+                            break;
+
+                        case "DOCUMENT":
+                            objectMessage = _util.DocumentMessage("https://www.clickdimensions.com/links/TestPDFfile.pdf", userNumber);
+                            break;
+
+                        case "LOCATION":
+                            objectMessage = _util.LocationMessage(userNumber);
+                            break;
+
+                        case "BUTTON":
+                            objectMessage = _util.ButtonsMessage(userNumber);
+                            break;
+
+                        default:
+                            objectMessage = _util.TextMessage("No entiendo mi rey", userNumber);
+                            break;
+                    }
+
+                    await _whatsappCloudSendMessage.Excecute(objectMessage);
+
                 }
                 return Ok("EVENT_RECEIVED");
             }
